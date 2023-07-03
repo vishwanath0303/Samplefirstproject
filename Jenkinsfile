@@ -1,16 +1,22 @@
 pipeline {
-    agent { label "dev-server" }
-    stages{
-        stage("Clone Code"){
-            steps{
-                git url: "https://github.com/vishwanath0303/Samplefirstproject.git", branch: "main"
-            }
+	agent none  
+	stages {
+  	 stage('Maven Install') {
+    	agent {
+      	docker {
+        	image 'maven:3.6.3'
         }
-        stage("Build and Test"){
-            steps{
-                sh "docker build . -t node-app-test-new"
-            }
-        }
-        }
+      }
+      steps {
+      	sh 'mvn clean install'
+      }
     }
+    stage('Docker Build') {
+    	agent any
+      steps {
+      	sh 'docker build -t vkulkarni0303/spring-petclinic:latest .'
+      }
+    }
+    }
+  }
 }
